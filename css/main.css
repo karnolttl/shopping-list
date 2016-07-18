@@ -1,0 +1,66 @@
+body {
+}
+
+.main {
+  background-color: whitesmoke;
+  margin: auto;
+  width: 375px;
+  height: 667px;
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+header {
+}
+
+input[type=text] {
+  border: none;
+  text-align: center;
+  background-color: whitesmoke;
+  font-family: 'Fredericka the Great', cursive;
+  font-weight: 400;
+  -webkit-border-image:
+    -webkit-linear-gradient(left, rgba(255,255,255,1) 1%, rgba(105,105,105,1) 50%, rgba(255,255,255,1) 100%) 0 0 100% 0/0 0 1px 0 stretch;
+  font-size: 2rem;
+}
+
+input[type=text]:focus {
+  outline: none;
+}
+
+
+h1 {
+  font-family: 'Cabin Sketch', cursive;
+  font-weight: 400;
+  color: dimgrey;
+  margin: 0;
+  padding-bottom: .5rem;
+  font-size: 3rem;
+}
+
+ul {
+  list-style-type: none;
+  -webkit-padding-start: 0;
+  -webkit-padding-end: 0;
+  -webkit-margin-before: 0;
+  -webkit-margin-after: 0;
+  padding: 0;
+  font-size: 2rem;
+}
+
+.list-todo li {
+  font-family: 'Fredericka the Great', cursive;
+  font-weight: 400;
+}
+
+.list-done li {
+  font-family: 'Fredericka the Great', cursive;
+  font-weight: 400;
+  text-decoration: line-through;
+  color: dimgrey;
+}
+
+.list-todo li:hover, .list-done li:hover {
+  cursor: pointer;
+}
