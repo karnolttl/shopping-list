@@ -12,7 +12,6 @@ $('.list-done').on ('click', 'li', function() {
   $(this).remove();
 });
 
-
 $('.entry input').keyup(function (e) {
   if (e.keyCode == 13) {
     if ($(this).val() == ":c") {

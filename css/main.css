@@ -23,12 +23,21 @@ input[type=text] {
   -webkit-border-image:
     -webkit-linear-gradient(left, rgba(255,255,255,1) 1%, rgba(105,105,105,1) 50%, rgba(255,255,255,1) 100%) 0 0 100% 0/0 0 1px 0 stretch;
   font-size: 2rem;
+  float: left;
+  width: 325px;
 }
 
 input[type=text]:focus {
   outline: none;
 }
 
+.entry div {
+  font-family: 'Fredericka the Great', cursive;
+  font-weight: 400;
+  font-size: 2rem;
+  float: right;
+  padding-right: 10px;
+}
 
 h1 {
   font-family: 'Cabin Sketch', cursive;
@@ -49,18 +58,31 @@ ul {
   font-size: 2rem;
 }
 
-.list-todo li {
+.todo {
   font-family: 'Fredericka the Great', cursive;
   font-weight: 400;
 }
 
-.list-done li {
+.done {
   font-family: 'Fredericka the Great', cursive;
   font-weight: 400;
   text-decoration: line-through;
   color: dimgrey;
 }
 
-.list-todo li:hover, .list-done li:hover {
+.todo:hover, .done:hover {
   cursor: pointer;
+}
+
+ul div {
+  float: right;
+  padding-right: 10px;
+  width: 25px;
+}
+
+ul p{
+  float: left;
+  margin: 0px;
+  width: 325px;
+  display: inline-block;
 }
