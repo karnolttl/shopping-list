@@ -55,18 +55,16 @@ img {
   padding-top: .125rem;
 }
 
-.list-todo li {
+.todo-list {
   font-family: 'Fredericka the Great', cursive;
   font-weight: 400;
 }
 
-.list-done li {
-  font-family: 'Fredericka the Great', cursive;
-  font-weight: 400;
+.done {
   text-decoration: line-through;
   color: dimgrey;
 }
 
-.list-todo li:hover, .list-done li:hover {
+.todo-list li:hover {
   cursor: pointer;
 }
