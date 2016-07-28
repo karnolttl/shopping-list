@@ -1,16 +1,22 @@
-$('.list-todo').on('click', 'li', function() {
+var imgHtmlRemove = "<img src=\"img/remove.svg\" alt=\"\" /></li>";
+
+//$('.list-todo').on('click', 'li', function() {
   //console.log($(this).text());
-  var el = $("<li>"+$(this).text()+"</li>");
-  $('.list-done').append(el);
-  $(this).remove();
+  //var el = $("<li>"+$(this).text()+imgHtmlRemove);
+  //$('.list-done').append(el);
+  //$(this).remove();
+//});
+
+$('ul[class^="list-"]').on('click', 'img', function() {
+  $(this).parent().remove();
 });
 
-$('.list-done').on ('click', 'li', function() {
-  //console.log($(this).text());
-  var el = $("<li>"+$(this).text()+"</li>");
-  $('.list-todo').prepend(el);
-  $(this).remove();
-});
+//$('.list-done').on ('click', 'li', function() {
+  ////console.log($(this).text());
+//var el = $("<li>"+$(this).text()+imgHtmlRemove);
+  //$('.list-todo').prepend(el);
+  //$(this).remove();
+//});
 
 
 $('.entry input').keyup(function (e) {
@@ -39,7 +45,7 @@ $('.entry input').keyup(function (e) {
     });
     //console.log(inputVal);
     if (inputVal != '' && !found) {
-      var el = $("<li>"+inputVal+"</li>");
+      var el = $("<li>"+inputVal+imgHtmlRemove);
       $('.list-todo').prepend(el);
       $(this).val('');
     }

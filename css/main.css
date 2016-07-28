@@ -45,8 +45,14 @@ ul {
   -webkit-padding-end: 0;
   -webkit-margin-before: 0;
   -webkit-margin-after: 0;
-  padding: 0;
+  padding: .25rem 0 0 0;
   font-size: 2rem;
+}
+
+img {
+  height: 2.25rem;
+  float: right;
+  padding-top: .125rem;
 }
 
 .list-todo li {
