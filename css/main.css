@@ -1,11 +1,11 @@
 body {
+  background-color: whitesmoke;
 }
 
 .main {
-  background-color: whitesmoke;
   margin: auto;
-  width: 375px;
-  height: 667px;
+  min-width: 320px;
+  max-width: 435px;
   position: relative;
   z-index: 1;
   text-align: center;
@@ -17,18 +17,22 @@ header {
 input[type=text] {
   border: none;
   text-align: center;
-  background-color: whitesmoke;
+  background-color: inherit;
   font-family: 'Fredericka the Great', cursive;
   font-weight: 400;
   -webkit-border-image:
     -webkit-linear-gradient(left, rgba(255,255,255,1) 1%, rgba(105,105,105,1) 50%, rgba(255,255,255,1) 100%) 0 0 100% 0/0 0 1px 0 stretch;
   font-size: 2rem;
+  width: 275px;
 }
 
 input[type=text]:focus {
   outline: none;
 }
-
+/* remove 'x' in IE10 / edge input box */
+input::-ms-clear {
+  display: none;
+}
 
 h1 {
   font-family: 'Cabin Sketch', cursive;
@@ -47,6 +51,11 @@ ul {
   -webkit-margin-after: 0;
   padding: .25rem 0 0 0;
   font-size: 2rem;
+  animation-duration: 4s;
+}
+
+.todo-list li {
+  animation-duration: 0.25s;
 }
 
 img {

@@ -1,40 +1,44 @@
 var imgHtmlRemove = "<img src=\"img/remove.svg\" alt=\"\" /></li>";
 
 function addItem() {
-    var found = false;
     var inputVal = $('.entry input').val();
     var searchText = inputVal.toLowerCase().trim();
-    $('.todo-list > span').each(function(){
+    $('li > span').each(function(){
       if (searchText == $(this).text().toLowerCase().trim()) {
-        found = true;
         if ($(this).parent().hasClass('todo')) {
-          $(this).parent().remove();
+          $(this).parent().animateCss('shake');
+          $('.entry input').val('');
         }
         else {
           $(this).parent().removeClass("done");
           $(this).parent().addClass("todo");
+          $(this).parent().animateCss('rubberBand');
+          $('.entry input').val('');
         }
       }
     });
-    if (inputVal != '' && !found) {
+    inputVal = $('.entry input').val();
+    if (inputVal != '') {
       var el = $("<li class=\"todo\"><span>"+inputVal+"</span>"+imgHtmlRemove);
       $('.todo-list').prepend(el);
+      el.animateCss('fadeIn', false);
       $('.entry input').val('');
     }
 }
 
-$('.todo-list').on('click', 'li[class="todo"]', function() {
-  $(this).removeClass("todo");
-  $(this).addClass("done");
+$('.todo-list').on('click', 'span', function() {
+  if ($(this).parent().hasClass("todo")) {
+    $(this).parent().removeClass("todo");
+    $(this).parent().addClass("done");
+  }
+  else{
+    $(this).parent().removeClass("done");
+    $(this).parent().addClass("todo");
+  }
 });
 
 $('.todo-list').on('click', 'img', function() {
-  $(this).parent().remove();
-});
-
-$('.todo-list').on ('click', 'li[class="done"]', function() {
-  $(this).removeClass("done");
-  $(this).addClass("todo");
+  $(this).parent().animateCss('fadeOut', true);
 });
 
 $('.entry input').keyup(function (e) {
@@ -43,10 +47,18 @@ $('.entry input').keyup(function (e) {
   }
 });
 
-$('.entry').on('click', 'img', function() {
-  addItem();
-});
+$('.entry').on('click', 'img', addItem);
 
+$.fn.extend({
+  animateCss: function (animationName, remove) {
+    var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+        $(this).addClass('animated ' + animationName).one(animationEnd, function() {
+            $(this).removeClass('animated ' + animationName);
+            if (remove)
+              $(this).remove();
+        });
+    }
+});
 
 //function sortList(ul){
   //var new_ul = ul.cloneNode(false);
