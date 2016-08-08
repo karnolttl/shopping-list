@@ -9,6 +9,7 @@ requirejs.config({
     'lodash': [
       '//cdnjs.cloudflare.com/ajax/libs/lodash.js/4.14.1/lodash.min',
       'lodash.min'
-    ]
+    ],
+    'tmplate': 'tmplate'
   }
 });

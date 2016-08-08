@@ -1,7 +1,5 @@
 define(['jquery', 'lodash'], function($,_) {
 
-  imgHtmlRemove = "<img src=\"img/remove.svg\" alt=\"\" /></li>";
-
   function addItem() {
       var inputVal = $('.entry input').val();
       var searchText = inputVal.toLowerCase().trim();
@@ -21,7 +19,11 @@ define(['jquery', 'lodash'], function($,_) {
       });
       inputVal = $('.entry input').val();
       if (inputVal != '') {
-        var el = $("<li class=\"todo\"><span>"+inputVal+"</span>"+imgHtmlRemove);
+        //load item html template
+        var itm = _.trim($('#item').text(), "'");
+        // use lodash template function
+        var compiled = _.template(itm);
+        var el = $(compiled({'itm': inputVal}));
         $('.todo-list').prepend(el);
         el.animateCss('fadeIn', false);
         $('.entry input').val('');
