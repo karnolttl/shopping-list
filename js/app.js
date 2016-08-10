@@ -23,7 +23,7 @@ define(['jquery', 'lodash'], function($,_) {
         var itm = _.trim($('#item').text(), "'");
         // use lodash template function
         var compiled = _.template(itm);
-        var el = $(compiled({'itm': inputVal}));
+        var el = $(compiled({'cls': 'todo', 'itm': inputVal}));
         $('.todo-list').prepend(el);
         el.animateCss('fadeIn', false);
         $('.entry input').val('');
@@ -51,7 +51,19 @@ define(['jquery', 'lodash'], function($,_) {
     }
   });
 
-  $('.entry').on('click', 'img', addItem);
+  $('.entry').on('click', 'img', sortUl);
+
+  function sortUl(){
+    var listItems = [];
+    $('.todo-list span').each(function() { listItems.push({'cls':
+      $(this).parent().hasClass('todo') ? 'todo' : 'done', 'itm': $(this).text()})
+    });
+    listItems = _.orderBy(listItems, ['cls', 'itm'], ['desc', 'asc']);
+    _.forEach(listItems, function(o) {
+      console.log('cls: ' + o.cls + '  itm: ' + o.itm);
+    });
+    $('.todo-list').children('li').remove();
+  };
 
   $.fn.extend({
     animateCss: function (animationName, remove) {
