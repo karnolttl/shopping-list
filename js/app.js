@@ -51,7 +51,7 @@ define(['jquery', 'lodash'], function($,_) {
     }
   });
 
-  $('.entry').on('click', 'img', sortUl);
+  $('.entry').on('click', 'img', filterInput);
 
   function sortUl(){
     var listItems = [];
@@ -59,11 +59,36 @@ define(['jquery', 'lodash'], function($,_) {
       $(this).parent().hasClass('todo') ? 'todo' : 'done', 'itm': $(this).text()})
     });
     listItems = _.orderBy(listItems, ['cls', 'itm'], ['desc', 'asc']);
-    _.forEach(listItems, function(o) {
-      console.log('cls: ' + o.cls + '  itm: ' + o.itm);
-    });
+    //_.forEach(listItems, function(o) {
+      //console.log('cls: ' + o.cls + '  itm: ' + o.itm);
+    //});
     $('.todo-list').children('li').remove();
+    var compiled = _.template('<% _.forEach(listItems, function(o) { %><li class="<%= o.cls %>"><span><%- o.itm %></span><img src="img/remove.svg" alt="" /></li><% }); %>');
+    $('.todo-list').append(compiled({'listItems': listItems}));
   };
+
+  function clearUl(){
+    $('.todo-list').children('li').remove();
+  }
+
+  function removeDone(){
+      $('.entry input').val('');
+      $('.done').remove();
+  }
+
+  function filterInput(){
+    $('.hidden').removeClass('hidden');
+    var inpt = $('.entry input').val();
+    if (inpt != '') {
+      var re = new RegExp(inpt, "i")
+      $('.todo-list span').each(function() {
+        var OK = re.exec($(this).text());
+        if (!OK)
+          $(this).parent().addClass('hidden');
+      });
+    }
+  }
+
 
   $.fn.extend({
     animateCss: function (animationName, remove) {

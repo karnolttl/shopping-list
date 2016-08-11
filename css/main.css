@@ -77,3 +77,7 @@ img {
 .todo-list li:hover {
   cursor: pointer;
 }
+
+.hidden {
+  display: none;
+}
