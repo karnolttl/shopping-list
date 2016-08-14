@@ -51,7 +51,10 @@ define(['jquery', 'lodash'], function($,_) {
     }
   });
 
-  $('.entry').on('click', 'img', filterInput);
+  $('.entry').on('click', 'img', addItem);
+  $('.icon-menu').on('click', 'img[src*="filter"]', filterInput);
+  $('.icon-menu').on('click', 'img[src*="sort"]', sortUl);
+  $('.icon-menu').on('click', 'img[src*="remove-all"]', clearUl);
 
   function sortUl(){
     var listItems = [];

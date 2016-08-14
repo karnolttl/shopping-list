@@ -58,7 +58,17 @@ ul {
   animation-duration: 0.25s;
 }
 
-img {
+.icon-menu img {
+  height: 2.25rem;
+  padding-top: .125rem;
+  padding-right: 2rem;
+}
+
+.icon-menu {
+  padding-left: 2.25rem;
+}
+
+.entry img, .todo-list img {
   height: 2.25rem;
   float: right;
   padding-top: .125rem;
