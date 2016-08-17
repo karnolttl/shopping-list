@@ -15,10 +15,10 @@
     </header>
     <section class:"content">
       <div class="icon-menu">
-        <img src="img/sort.svg" alt=""/>
-        <img src="img/filter.svg" alt=""/>
-        <img src="img/remove-all.svg" alt=""/>
-        <img src="img/save.svg" alt=""/>
+        <img id='sort' src="img/sort.svg" alt=""/>
+        <img id='filter' src="img/filter.svg" alt=""/>
+        <img id='remove-all' src="img/remove-all.svg" alt=""/>
+        <img id='save' src="img/save.svg" alt=""/>
       </div>
       <div class="entry">
         <input type="text" name="additem" placeholder="add item">
@@ -27,7 +27,9 @@
       <ul class="todo-list"></ul>
     </section>
   </div>
-  <script id="item" type="text/html">'<li class="<%= cls %>"><span><%= itm %></span><img src="img/remove.svg" alt="" /></li>'</script>
+  <script id="item" type="text/html">
+    <li class="<%= cls %>"><span><%= itm %></span><img src="img/remove.svg" alt="" /></li>
+  </script>
   <script data-main="js/config" src="js/require.js"></script>
 </body>
 

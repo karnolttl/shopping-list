@@ -61,7 +61,7 @@ ul {
 .icon-menu img {
   height: 2.25rem;
   padding-top: .125rem;
-  padding-right: 2rem;
+  margin-right: 2rem;
 }
 
 .icon-menu {
@@ -90,4 +90,8 @@ ul {
 
 .hidden {
   display: none;
+}
+
+.filter-icon {
+  outline: 3px solid black;
 }

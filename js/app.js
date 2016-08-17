@@ -1,44 +1,42 @@
 define(['jquery', 'lodash'], function($,_) {
 
+  $('.entry').on('click', 'img', addItem);
+  $('#sort').on('click', sortUl);
+  $('#filter').on('click', filterInput);
+  $('#remove-all').on('click', clearUl);
+
   function addItem() {
-      var inputVal = $('.entry input').val();
-      var searchText = inputVal.toLowerCase().trim();
-      $('li > span').each(function(){
-        if (searchText == $(this).text().toLowerCase().trim()) {
-          if ($(this).parent().hasClass('todo')) {
-            $(this).parent().animateCss('shake');
-            $('.entry input').val('');
-          }
-          else {
-            $(this).parent().removeClass("done");
-            $(this).parent().addClass("todo");
-            $(this).parent().animateCss('rubberBand');
-            $('.entry input').val('');
-          }
+    var found = false;
+    var $input = $('.entry input');
+    var inputVal = $input.val();
+    var searchText = inputVal.toLowerCase().trim();
+    $('.todo-list li').each(function(){
+      if (searchText == $(this).find('span').text().toLowerCase().trim()) {
+        found = true;
+        $input.val('');
+        if ($(this).hasClass('todo')) {
+          $(this).animateCss('shake');
         }
-      });
-      inputVal = $('.entry input').val();
-      if (inputVal != '') {
-        //load item html template
-        var itm = _.trim($('#item').text(), "'");
-        // use lodash template function
-        var compiled = _.template(itm);
-        var el = $(compiled({'cls': 'todo', 'itm': inputVal}));
-        $('.todo-list').prepend(el);
-        el.animateCss('fadeIn', false);
-        $('.entry input').val('');
+        else {
+          $(this).toggleClass('todo done');
+          $(this).animateCss('rubberBand');
+        }
       }
+    });
+    if (!found) {
+      //load item html template
+      var itm = $('#item').text();
+      // use lodash template function
+      var compiled = _.template(itm);
+      var el = $(compiled({'cls': 'todo', 'itm': inputVal}));
+      $('.todo-list').prepend(el);
+      el.animateCss('fadeIn', false);
+      $input.val('');
+    }
   }
 
   $('.todo-list').on('click', 'span', function() {
-    if ($(this).parent().hasClass("todo")) {
-      $(this).parent().removeClass("todo");
-      $(this).parent().addClass("done");
-    }
-    else{
-      $(this).parent().removeClass("done");
-      $(this).parent().addClass("todo");
-    }
+    $(this).parent().toggleClass('todo done');
   });
 
   $('.todo-list').on('click', 'img', function() {
@@ -51,47 +49,44 @@ define(['jquery', 'lodash'], function($,_) {
     }
   });
 
-  $('.entry').on('click', 'img', addItem);
-  $('.icon-menu').on('click', 'img[src*="filter"]', filterInput);
-  $('.icon-menu').on('click', 'img[src*="sort"]', sortUl);
-  $('.icon-menu').on('click', 'img[src*="remove-all"]', clearUl);
-
   function sortUl(){
-    var listItems = [];
-    $('.todo-list span').each(function() { listItems.push({'cls':
-      $(this).parent().hasClass('todo') ? 'todo' : 'done', 'itm': $(this).text()})
-    });
-    listItems = _.orderBy(listItems, ['cls', 'itm'], ['desc', 'asc']);
-    //_.forEach(listItems, function(o) {
-      //console.log('cls: ' + o.cls + '  itm: ' + o.itm);
-    //});
-    $('.todo-list').children('li').remove();
-    var compiled = _.template('<% _.forEach(listItems, function(o) { %><li class="<%= o.cls %>"><span><%- o.itm %></span><img src="img/remove.svg" alt="" /></li><% }); %>');
-    $('.todo-list').append(compiled({'listItems': listItems}));
+    function sortLi(a,b){
+      return ($(b).text()) < ($(a).text()) ? 1 : -1;
+    }
+    $('.todo-list .todo').sort(sortLi).appendTo('.todo-list');
+    $('.todo-list .done').sort(sortLi).appendTo('.todo-list');
   };
 
   function clearUl(){
-    $('.todo-list').children('li').remove();
-  }
-
-  function removeDone(){
-      $('.entry input').val('');
-      $('.done').remove();
+    $('.todo-list li').remove();
+    $('.entry input').val('');
   }
 
   function filterInput(){
-    $('.hidden').removeClass('hidden');
-    var inpt = $('.entry input').val();
-    if (inpt != '') {
-      var re = new RegExp(inpt, "i")
-      $('.todo-list span').each(function() {
-        var OK = re.exec($(this).text());
-        if (!OK)
-          $(this).parent().addClass('hidden');
-      });
+    var $this = $(this);
+    var $input = $('.entry input');
+    $this.toggleClass('filter-icon');
+    var placeholderText = 'add item';
+    if ($this.hasClass('filter-icon')) {
+      placeholderText = 'filter item';
     }
+    $input.attr('placeholder', placeholderText);
   }
 
+  $('entry input').on('input', filterIn);
+
+  function filterIn() {
+    //$('.hidden').removeClass('hidden');
+    //var inpt = $('.entry input').val();
+    //if (inpt != '') {
+      //var re = new RegExp(inpt, "i")
+      //$('.todo-list span').each(function() {
+        //var OK = re.exec($(this).text());
+        //if (!OK)
+          //$(this).parent().addClass('hidden');
+      //});
+    //}
+  }
 
   $.fn.extend({
     animateCss: function (animationName, remove) {
