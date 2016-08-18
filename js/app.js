@@ -1,39 +1,10 @@
 define(['jquery', 'lodash'], function($,_) {
 
+
   $('.entry').on('click', 'img', addItem);
   $('#sort').on('click', sortUl);
   $('#filter').on('click', filterInput);
   $('#remove-all').on('click', clearUl);
-
-  function addItem() {
-    var found = false;
-    var $input = $('.entry input');
-    var inputVal = $input.val();
-    var searchText = inputVal.toLowerCase().trim();
-    $('.todo-list li').each(function(){
-      if (searchText == $(this).find('span').text().toLowerCase().trim()) {
-        found = true;
-        $input.val('');
-        if ($(this).hasClass('todo')) {
-          $(this).animateCss('shake');
-        }
-        else {
-          $(this).toggleClass('todo done');
-          $(this).animateCss('rubberBand');
-        }
-      }
-    });
-    if (!found) {
-      //load item html template
-      var itm = $('#item').text();
-      // use lodash template function
-      var compiled = _.template(itm);
-      var el = $(compiled({'cls': 'todo', 'itm': inputVal}));
-      $('.todo-list').prepend(el);
-      el.animateCss('fadeIn', false);
-      $input.val('');
-    }
-  }
 
   $('.todo-list').on('click', 'span', function() {
     $(this).parent().toggleClass('todo done');
@@ -48,6 +19,37 @@ define(['jquery', 'lodash'], function($,_) {
       addItem();
     }
   });
+
+  function addItem() {
+    var found = false;
+    var $input = $('.entry input');
+    var inputVal = $input.val();
+    var searchText = inputVal.toLowerCase().trim();
+    $('.todo-list li').each(function(){
+      var $this = $(this);
+      if (searchText == $this.find('span').text().toLowerCase().trim()) {
+        found = true;
+        $input.val('');
+        if ($this.hasClass('todo')) {
+          $this.animateCss('shake');
+        }
+        else {
+          $this.toggleClass('todo done');
+          $this.animateCss('rubberBand');
+        }
+      }
+    });
+    if (!found) {
+      //load item html template
+      var itm = $('#item').text();
+      // use lodash template function
+      var compiled = _.template(itm);
+      var el = $(compiled({'cls': 'todo', 'itm': inputVal}));
+      $('.todo-list').prepend(el);
+      el.animateCss('fadeIn', false);
+      $input.val('');
+    }
+  }
 
   function sortUl(){
     function sortLi(a,b){
@@ -67,25 +69,27 @@ define(['jquery', 'lodash'], function($,_) {
     var $input = $('.entry input');
     $this.toggleClass('filter-icon');
     var placeholderText = 'add item';
+    $input.off('input', filter);
+    $('.hidden').removeClass('hidden');
     if ($this.hasClass('filter-icon')) {
       placeholderText = 'filter item';
+      $input.on('input', filter);
     }
     $input.attr('placeholder', placeholderText);
   }
 
-  $('entry input').on('input', filterIn);
-
-  function filterIn() {
-    //$('.hidden').removeClass('hidden');
-    //var inpt = $('.entry input').val();
-    //if (inpt != '') {
-      //var re = new RegExp(inpt, "i")
-      //$('.todo-list span').each(function() {
-        //var OK = re.exec($(this).text());
-        //if (!OK)
-          //$(this).parent().addClass('hidden');
-      //});
-    //}
+  function filter() {
+    $('.hidden').removeClass('hidden');
+    var val = $('.entry input').val();
+    if (val != '') {
+      var re = new RegExp(val, "i")
+      $('.todo-list li').each(function() {
+        var $this = $(this);
+        var OK = re.exec($this.find('span').text());
+        if (!OK)
+          $this.addClass('hidden');
+      });
+    }
   }
 
   $.fn.extend({
