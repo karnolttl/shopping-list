@@ -1,18 +1,6 @@
 define(['jquery', 'lodash'], function($,_) {
 
-
   $('.entry').on('click', 'img', addItem);
-  $('#sort').on('click', sortUl);
-  $('#filter').on('click', filterInput);
-  $('#remove-all').on('click', clearUl);
-
-  $('.todo-list').on('click', 'span', function() {
-    $(this).parent().toggleClass('todo done');
-  });
-
-  $('.todo-list').on('click', 'img', function() {
-    $(this).parent().animateCss('fadeOut', true);
-  });
 
   $('.entry input').keyup(function (e) {
     if (e.keyCode == 13) {
@@ -39,7 +27,7 @@ define(['jquery', 'lodash'], function($,_) {
         }
       }
     });
-    if (!found) {
+    if (inputVal !== '' && !found) {
       //load item html template
       var itm = $('#item').text();
       // use lodash template function
@@ -50,21 +38,20 @@ define(['jquery', 'lodash'], function($,_) {
       $input.val('');
     }
   }
+  var sortAsc = 1;
+  var sortDsc = -1;
+  $('#sort').on('click', function sortUl(){
+    $('.todo-list .todo').sort(function(a,b){
+    return ($(b).text()) < ($(a).text()) ? sortAsc : sortDsc;
+    }).appendTo('.todo-list');
+    $('.todo-list .done').sort(function(a,b){
+    return ($(b).text()) < ($(a).text()) ? sortAsc : sortDsc;
+    }).appendTo('.todo-list');
+    sortAsc *= -1;
+    sortDsc *= -1;
+  });
 
-  function sortUl(){
-    function sortLi(a,b){
-      return ($(b).text()) < ($(a).text()) ? 1 : -1;
-    }
-    $('.todo-list .todo').sort(sortLi).appendTo('.todo-list');
-    $('.todo-list .done').sort(sortLi).appendTo('.todo-list');
-  };
-
-  function clearUl(){
-    $('.todo-list li').remove();
-    $('.entry input').val('');
-  }
-
-  function filterInput(){
+  $('#filter').on('click', function(){
     var $this = $(this);
     var $input = $('.entry input');
     $this.toggleClass('filter-icon');
@@ -73,24 +60,35 @@ define(['jquery', 'lodash'], function($,_) {
     $('.hidden').removeClass('hidden');
     if ($this.hasClass('filter-icon')) {
       placeholderText = 'filter item';
-      $input.on('input', filter);
-    }
-    $input.attr('placeholder', placeholderText);
-  }
-
-  function filter() {
-    $('.hidden').removeClass('hidden');
-    var val = $('.entry input').val();
-    if (val != '') {
-      var re = new RegExp(val, "i")
-      $('.todo-list li').each(function() {
-        var $this = $(this);
-        var OK = re.exec($this.find('span').text());
-        if (!OK)
-          $this.addClass('hidden');
+      $input.on('input', function () {
+        $('.hidden').removeClass('hidden');
+        var val = $('.entry input').val();
+        if (val != '') {
+          var re = new RegExp(val, "i")
+          $('.todo-list li').each(function() {
+            var $this = $(this);
+            var OK = re.exec($this.find('span').text());
+            if (!OK)
+              $this.addClass('hidden');
+          });
+        }
       });
     }
-  }
+    $input.attr('placeholder', placeholderText);
+  });
+
+  $('#remove-all').on('click', function(){
+      $('.todo-list li').remove();
+      $('.entry input').val('');
+    });
+
+  $('.todo-list').on('click', 'span', function() {
+    $(this).parent().toggleClass('todo done');
+  });
+
+  $('.todo-list').on('click', 'img', function() {
+    $(this).parent().animateCss('fadeOut', true);
+  });
 
   $.fn.extend({
     animateCss: function (animationName, remove) {
@@ -102,8 +100,4 @@ define(['jquery', 'lodash'], function($,_) {
           });
       }
   });
-
 });
-
-
-
