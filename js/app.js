@@ -1,5 +1,42 @@
 define(['jquery', 'lodash'], function($,_) {
 
+  var items = [];
+  var isStorageAvailable = true;
+  var historyObj = { "list" : [] };
+
+  initialize();
+
+  function initialize(){
+    if(!storageAvailable('localStorage')){
+      isStorageAvailable = false;
+      return;
+    }
+    if(localStorage.getItem('history')){
+      var historyStr = localStorage.getItem('history');
+      historyObj = JSON.parse(historyStr);
+      var i = historyObj.list.length;
+      var itm = $('#item').text();
+      var compiled = _.template(itm);
+      while(i--) {
+        var el = $(compiled({'cls': 'todo', 'itm': historyObj.list[i]}));
+        $('.todo-list').prepend(el);
+      } // while loop through historyObj list
+    } // if history is populated
+  }
+
+  function storageAvailable(type) {
+    try {
+      var storage = window[type],
+        x = '__storage_test__';
+      storage.setItem(x, x);
+      storage.removeItem(x);
+      return true;
+    }
+    catch(e) {
+      return false;
+    }
+  }
+
   $('.entry').on('click', 'img', addItem);
 
   $('.entry input').keyup(function (e) {
@@ -28,9 +65,12 @@ define(['jquery', 'lodash'], function($,_) {
       }
     });
     if (inputVal !== '' && !found) {
-      //load item html template
+      if (isStorageAvailable && !contains(historyObj.list, inputVal)) {
+        historyObj.list.push(inputVal);
+        localStorage.setItem('history', JSON.stringify(historyObj));
+      }// if storage is available and new item is not in history
+
       var itm = $('#item').text();
-      // use lodash template function
       var compiled = _.template(itm);
       var el = $(compiled({'cls': 'todo', 'itm': inputVal}));
       $('.todo-list').prepend(el);
@@ -38,6 +78,17 @@ define(['jquery', 'lodash'], function($,_) {
       $input.val('');
     }
   }
+
+  function contains(a, obj) {
+    var i = a.length;
+    while (i--) {
+      if (a[i].toLowerCase() === obj.toLowerCase()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   var sortAsc = 1;
   var sortDsc = -1;
   $('#sort').on('click', function sortUl(){
@@ -77,6 +128,18 @@ define(['jquery', 'lodash'], function($,_) {
     $input.attr('placeholder', placeholderText);
   });
 
+  function removeFromLocalStorage (itm) {
+    if (isStorageAvailable && contains(historyObj.list, itm)) {
+      var i = historyObj.list.length;
+      var arr = [];
+      while (i--) {
+        arr.unshift(historyObj.list[i].toLowerCase());
+      }
+      var idx = arr.indexOf(itm.toLowerCase());
+      historyObj.list.splice(idx, 1);
+      localStorage.setItem('history', JSON.stringify(historyObj));
+    }// if storage is available and new item is not in history
+  }
   $('#remove-all').on('click', function(){
       $('.todo-list li').remove();
       $('.entry input').val('');
@@ -88,6 +151,7 @@ define(['jquery', 'lodash'], function($,_) {
 
   $('.todo-list').on('click', 'img', function() {
     $(this).parent().animateCss('fadeOut', true);
+    removeFromLocalStorage($(this).prev().text());
   });
 
   $.fn.extend({
