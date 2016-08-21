@@ -58,13 +58,17 @@ ul {
   animation-duration: 0.25s;
 }
 
-.icon-menu img {
+.icon-menu img, .saved-lists img {
   height: 2.25rem;
   padding-top: .125rem;
   margin-right: 2rem;
 }
 
-.icon-menu {
+.saved-lists > img {
+  margin-top: 1rem;
+}
+
+.icon-menu, .saved-lists {
   padding-left: 2.25rem;
 }
 
@@ -94,4 +98,8 @@ ul {
 
 .filter-icon {
   outline: 3px solid black;
+}
+
+img:hover {
+  cursor: pointer;
 }

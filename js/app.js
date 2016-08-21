@@ -1,8 +1,10 @@
 define(['jquery', 'lodash'], function($,_) {
 
-  var items = [];
   var isStorageAvailable = true;
   var historyObj = { "list" : [] };
+  var sortAsc = 1;
+  var sortDsc = -1;
+  var savedLists = 0;
 
   initialize();
 
@@ -18,10 +20,23 @@ define(['jquery', 'lodash'], function($,_) {
       var itm = $('#item').text();
       var compiled = _.template(itm);
       while(i--) {
-        var el = $(compiled({'cls': 'todo', 'itm': historyObj.list[i]}));
+        var el = $(compiled({'cls': historyObj.list[i].cls, 'itm': historyObj.list[i].itm}));
         $('.todo-list').prepend(el);
       } // while loop through historyObj list
     } // if history is populated
+    savedLists = localStorage.getItem('saved_lists');
+    if(savedLists){
+      for(var i = 0; i < savedLists; i++) {
+        var listName = 'list' + i;
+        var list = localStorage.getItem(listName);
+        if (list) {
+          var tpl = $('#icon-list').text();
+          var comp = _.template(tpl);
+          var el = $(comp({'list': listName}));
+          $('.saved-lists').append(el);
+        }// if saved list exists in local storage
+      }// loop through # of saved lists
+    }// if savedLists count key / value pair is found within local storage
   }
 
   function storageAvailable(type) {
@@ -66,7 +81,7 @@ define(['jquery', 'lodash'], function($,_) {
     });
     if (inputVal !== '' && !found) {
       if (isStorageAvailable && !contains(historyObj.list, inputVal)) {
-        historyObj.list.push(inputVal);
+        historyObj.list.unshift({"cls" : "todo", "itm": inputVal});
         localStorage.setItem('history', JSON.stringify(historyObj));
       }// if storage is available and new item is not in history
 
@@ -79,19 +94,17 @@ define(['jquery', 'lodash'], function($,_) {
     }
   }
 
-  function contains(a, obj) {
+  function contains(a, itm) {
     var i = a.length;
     while (i--) {
-      if (a[i].toLowerCase() === obj.toLowerCase()) {
+      if (a[i].itm.toLowerCase() === itm.toLowerCase()) {
         return true;
       }
     }
     return false;
   }
 
-  var sortAsc = 1;
-  var sortDsc = -1;
-  $('#sort').on('click', function sortUl(){
+  $('#sort').on('click', function(){
     $('.todo-list .todo').sort(function(a,b){
     return ($(b).text()) < ($(a).text()) ? sortAsc : sortDsc;
     }).appendTo('.todo-list');
@@ -100,6 +113,17 @@ define(['jquery', 'lodash'], function($,_) {
     }).appendTo('.todo-list');
     sortAsc *= -1;
     sortDsc *= -1;
+
+    if (isStorageAvailable){
+      historyObj.list = [];
+      $('.todo-list li').each(function() {
+        var $this = $(this);
+        var cls = ($this.hasClass('done')) ? 'done' : 'todo';
+        var itm = $this.find('span').text();
+        historyObj.list.push({"cls" : cls, "itm": itm});
+      });
+      localStorage.setItem('history', JSON.stringify(historyObj));
+    }
   });
 
   $('#filter').on('click', function(){
@@ -121,37 +145,63 @@ define(['jquery', 'lodash'], function($,_) {
             var OK = re.exec($this.find('span').text());
             if (!OK)
               $this.addClass('hidden');
-          });
-        }
-      });
+          });//match each li
+        }// if input is not blank
+      });// input onchange event handler function
+    }// if filter is active
+    else {
+      $input.off('input'); // remove input onchange event function
     }
     $input.attr('placeholder', placeholderText);
   });
 
+  function indexOfObjArray(itm) {
+    var len = historyObj.list.length;
+    var idx = -1;
+    for (var i = 0; i < len; i++) {
+      if (historyObj.list[i].itm.toLowerCase() === itm.toLowerCase()) {
+        idx = i;
+        break;
+      }// if item matches
+    }// for loop
+    return idx;
+  }
+
   function removeFromLocalStorage (itm) {
     if (isStorageAvailable && contains(historyObj.list, itm)) {
-      var i = historyObj.list.length;
-      var arr = [];
-      while (i--) {
-        arr.unshift(historyObj.list[i].toLowerCase());
+      var idx = indexOfObjArray(itm);
+      if (idx !== -1){
+        historyObj.list.splice(idx, 1);
       }
-      var idx = arr.indexOf(itm.toLowerCase());
-      historyObj.list.splice(idx, 1);
       localStorage.setItem('history', JSON.stringify(historyObj));
-    }// if storage is available and new item is not in history
+    }// if storage is available and item is in history
   }
+
   $('#remove-all').on('click', function(){
+    $('.todo-list span').each( function(){
+      removeFromLocalStorage($(this).text());
+    });
       $('.todo-list li').remove();
       $('.entry input').val('');
     });
 
   $('.todo-list').on('click', 'span', function() {
     $(this).parent().toggleClass('todo done');
+    var idx = indexOfObjArray($(this).text());
+    if (idx !== -1){
+      var cls = ($(this).parent().hasClass('done')) ? 'done' : 'todo';
+      historyObj.list[idx].cls = cls;
+      localStorage.setItem('history', JSON.stringify(historyObj));
+    }
   });
 
   $('.todo-list').on('click', 'img', function() {
     $(this).parent().animateCss('fadeOut', true);
     removeFromLocalStorage($(this).prev().text());
+  });
+
+  $('#save').on('click', function(){
+
   });
 
   $.fn.extend({
