@@ -2,10 +2,9 @@ define(['jquery', 'lodash'], function($,_) {
 
   var isStorageAvailable = true;
   var historyObj = { "list" : [] };
+  var savedListsObj = { "list_names" : [] };
   var sortAsc = 1;
   var sortDsc = -1;
-  var savedLists = 0;
-
   initialize();
 
   function initialize(){
@@ -24,19 +23,24 @@ define(['jquery', 'lodash'], function($,_) {
         $('.todo-list').prepend(el);
       } // while loop through historyObj list
     } // if history is populated
-    savedLists = localStorage.getItem('saved_lists');
-    if(savedLists){
-      for(var i = 0; i < savedLists; i++) {
-        var listName = 'list' + i;
+    var savedListsStr = localStorage.getItem('saved_lists');
+    if (savedListsStr) {
+      savedListsObj = JSON.parse(savedListsStr);
+      var len = savedListsObj.list_names.length;
+      for(var i = 0; i < len; i++) {
+        var listName = savedListsObj.list_names[i];
         var list = localStorage.getItem(listName);
-        if (list) {
+        if (list) { // if saved list exists in local storage
           var tpl = $('#icon-list').text();
           var comp = _.template(tpl);
-          var el = $(comp({'list': listName}));
+          var el = $(comp({'list': listName, 'num': i}));
           $('.saved-lists').append(el);
-        }// if saved list exists in local storage
-      }// loop through # of saved lists
-    }// if savedLists count key / value pair is found within local storage
+        } else {
+          savedListsObj.list_names.splice(i, 1);
+          localStorage.setItem('saved_lists', JSON.stringify(savedListsObj));
+        }
+      }// loop through possible saved lists
+    }//if list of saved lists exists in local storage
   }
 
   function storageAvailable(type) {
@@ -178,9 +182,11 @@ define(['jquery', 'lodash'], function($,_) {
   }
 
   $('#remove-all').on('click', function(){
-    $('.todo-list span').each( function(){
-      removeFromLocalStorage($(this).text());
-    });
+    historyObj.list = [];
+    localStorage.setItem('history', JSON.stringify(historyObj));
+    //$('.todo-list span').each( function(){
+      //removeFromLocalStorage($(this).text());
+    //});
       $('.todo-list li').remove();
       $('.entry input').val('');
     });
@@ -201,8 +207,55 @@ define(['jquery', 'lodash'], function($,_) {
   });
 
   $('#save').on('click', function(){
-
+    var listObj = { "list" : [] };
+    var newListId = makeid();
+    savedListsObj.list_names.push(newListId);
+    if (isStorageAvailable){
+      localStorage.setItem('saved_lists', JSON.stringify(savedListsObj));
+      listObj.list = [];
+      $('.todo-list li').each(function() {
+        var $this = $(this);
+        var cls = ($this.hasClass('done')) ? 'done' : 'todo';
+        var itm = $this.find('span').text();
+        listObj.list.push({"cls" : cls, "itm": itm});
+      });
+      localStorage.setItem(newListId, JSON.stringify(listObj));
+      var tpl = $('#icon-list').text();
+      var comp = _.template(tpl);
+      var el = $(comp({'list': newListId, 'num': '+'}));
+      $('.saved-lists').append(el);
+      $('.todo-list li').remove();
+      historyObj.list = [];
+      localStorage.setItem('history', JSON.stringify(historyObj));
+    }
   });
+
+  $('.saved-lists').on('click', 'div', function() {
+    $('.todo-list li').remove();
+    historyObj.list = [];
+    localStorage.setItem('history', JSON.stringify(historyObj));
+    var $this = $(this);
+    var listName = $this.attr('id');
+    var list = localStorage.getItem(listName);
+    if (list) {
+      var listObj = JSON.parse(list);
+      var i = listObj.list.length;
+      var itm = $('#item').text();
+      var compiled = _.template(itm);
+      while(i--) {
+        var el = $(compiled({'cls': listObj.list[i].cls, 'itm': listObj.list[i].itm}));
+        $('.todo-list').prepend(el);
+      } // while loop through listObj list
+    }// if saved list exists in local storage
+  });
+
+  function makeid() {
+      var text = "";
+      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      for( var i=0; i < 5; i++ )
+          text += possible.charAt(Math.floor(Math.random() * possible.length));
+      return text;
+  }
 
   $.fn.extend({
     animateCss: function (animationName, remove) {

@@ -58,17 +58,13 @@ ul {
   animation-duration: 0.25s;
 }
 
-.icon-menu img, .saved-lists img {
+.icon-menu img {
   height: 2.25rem;
   padding-top: .125rem;
   margin-right: 2rem;
 }
 
-.saved-lists > img {
-  margin-top: 1rem;
-}
-
-.icon-menu, .saved-lists {
+.icon-menu {
   padding-left: 2.25rem;
 }
 
@@ -101,5 +97,25 @@ ul {
 }
 
 img:hover {
+  cursor: pointer;
+}
+
+.saved-lists {
+  margin-top: 2rem;
+}
+
+.saved-lists > div {
+  display: inline-block;
+  width: 2.25rem;
+  height: 2.25rem;
+  line-height: 2.25rem;
+  margin: 0rem 1rem;
+  font-family: 'Fredericka the Great', cursive;
+  font-weight: 400;
+  font-size: 1.5rem;
+  outline: 1.5px dashed darkgrey;
+}
+
+.saved-lists > div:hover {
   cursor: pointer;
 }
